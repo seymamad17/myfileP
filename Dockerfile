@@ -2,7 +2,7 @@
 FROM python:3.9-slim
 
 # نصب وابستگی‌های سیستم (مثل ffmpeg)
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ffmpeg libsndfile1 && rm -rf /var/lib/apt/lists/*
 
 # تعیین دایرکتوری کاری داخل کانتینر
 WORKDIR /app
@@ -10,10 +10,13 @@ WORKDIR /app
 # کپی کردن فایل‌های پروژه به داخل کانتینر
 COPY . /app/
 
-# نصب پکیج‌ها از requirements.txt
-RUN pip install -r requirements.txt --no-cache-dir --verbose
+# ساخت محیط مجازی
+RUN python -m venv /opt/venv
 
-# تنظیم مسیر محیط مجازی برای اجرا
+# فعال کردن محیط مجازی و نصب پکیج‌ها
+RUN /opt/venv/bin/pip install -r /app/requirements.txt --no-cache-dir --verbose
+
+# تنظیم مسیر محیط مجازی
 ENV PATH="/opt/venv/bin:$PATH"
 
 # اجرای ربات
