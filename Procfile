@@ -1,1 +1,1 @@
-worker: python downloaderAll.py
+worker: python3 downloaderAll.py
