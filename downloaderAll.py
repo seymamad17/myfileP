@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # توکن ربات رو اینجا بذار
-TOKEN = "توکن_تو_اینجا"
+TOKEN = "7707789333:AAE_50ihmybcFPRbkhRvaNBEHlsufZfXOs8"
 
 # وقتی /start فرستاده میشه
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
