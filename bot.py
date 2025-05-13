@@ -1,47 +1,44 @@
-import telegram
 from telegram import Update
-from telegram.ext import Application, MessageHandler, filters
-import yt_dlp
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+import subprocess
 import os
+import asyncio
 
-TOKEN = '7707789333:AAE_50ihmybcFPRbkhRvaNBEHlsufZfXOs8'
+TOKEN = "7707789333:AAE_50ihmybcFPRbkhRvaNBEHlsufZfXOs8"
 
-async def handle_message(update: Update, context):
-    chat_id = update.message.chat_id
-    message_text = update.message.text
-    print(f"پیام دریافت شد: {message_text}")
+DOWNLOAD_DIR = "downloads"
 
-    if "http" in message_text and "pornhub.com" in message_text:
-        await update.message.reply_text("لینک رو گرفتم، آماده‌ام برای دانلود!")
-        try:
-            ydl_opts = {
-                'format': 'best',
-                'outtmpl': 'video.%(ext)s',
-            }
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                await update.message.reply_text("در حال دانلود ویدیو...")
-                print("دانلود شروع شد...")
-                info = ydl.extract_info(message_text, download=True)
-                video_file = ydl.prepare_filename(info)
-                print(f"فایل دانلود شد: {video_file}")
+async def handle_spotify(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    url = update.message.text.strip()
+    await update.message.reply_text("🎧 در حال دریافت آهنگ... لطفاً صبر کن.")
 
-            with open(video_file, 'rb') as video:
-                await context.bot.send_video(chat_id=chat_id, video=video)
-            os.remove(video_file)
-            await update.message.reply_text("دانلود تموم شد! ویدیو برات فرستاده شد.")
+    try:
+        os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+        subprocess.run(["spotdl", url, "--output", DOWNLOAD_DIR], check=True)
 
-        except Exception as e:
-            error_msg = f"یه مشکلی پیش اومد: {str(e)}"
-            print(error_msg)
-            await update.message.reply_text(error_msg)
-    else:
-        await update.message.reply_text("لطفاً یه لینک از PornHub بفرست!")
+        for file in os.listdir(DOWNLOAD_DIR):
+            if file.endswith(".mp3"):
+                filepath = os.path.join(DOWNLOAD_DIR, file)
+
+                sent_msg = await update.message.reply_audio(
+                    audio=open(filepath, 'rb'),
+                    caption="⏳ این آهنگ بعد از 20 ثانیه پاک میشه! اگه می‌خوای سیوش کن."
+                )
+
+                await asyncio.sleep(20)
+                await context.bot.delete_message(chat_id=update.effective_chat.id, message_id=sent_msg.message_id)
+                os.remove(filepath)
+                break
+
+    except Exception as e:
+        await update.message.reply_text("❌ مشکلی در دریافت آهنگ پیش اومد.")
+        print("خطا:", e)
 
 def main():
-    print("ربات داره شروع می‌کنه...")
-    application = Application.builder().token(TOKEN).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    application.run_polling()
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'https?://open\.spotify\.com/track/.*'), handle_spotify))
+    app.run_polling()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
+
