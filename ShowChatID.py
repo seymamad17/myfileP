@@ -4,11 +4,11 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from telegram.request import HTTPXRequest
 from telegram.error import TelegramError
 
-# توکن و آیدی عددی ادمین (اینجا مستقیم در کد وارد شده)
-TOKEN = "8122143072:AAGdRlT8O7HaZXNpQLApp7ZeuoYWtx0T1is"
+# توکن ربات و آیدی عددی ادمین
+TOKEN = "7893837582:AAFZhB-kL5G-wANNu4e8trgYf4wti6drTnk"
 ADMIN_ID = 7507284671
 
-# دستور /start
+# /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is None:
         return
@@ -24,7 +24,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(f"خطا در ارسال پیام: {e}")
         await context.bot.send_message(chat_id=chat_id, text="خطا در ارتباط با تلگرام.")
 
-# دستور /getlink
+# /getlink
 async def get_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message is None:
         return
@@ -49,7 +49,7 @@ async def get_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(f"خطا: {e}")
         await update.message.reply_text("خطا در ارسال پیام.")
 
-# شروع اجرای ربات
+# اجرای ربات
 async def main():
     print("🤖 ربات در حال اجراست...")
     try:
