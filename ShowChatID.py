@@ -7,7 +7,7 @@ from telegram.error import TelegramError
 
 # Get environment variables
 TOKEN = os.getenv("TOKEN", "8122143072:AAGdRlT8O7HaZXNpQLApp7ZeuoYWtx0T1is")
-ADMIN_ID = int(os.getenv("ADMIN_ID", "7507284671"))  # Replace with your Chat ID
+ADMIN_ID = int(os.getenv("ADMIN_ID", "7507284671"))
 
 # Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
